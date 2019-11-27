@@ -14,6 +14,4 @@ public class Peca {
 		return tabuleiro;
 	}
 
-	
-
 }

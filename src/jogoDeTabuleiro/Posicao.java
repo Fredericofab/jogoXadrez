@@ -2,9 +2,6 @@ package jogoDeTabuleiro;
 
 public class Posicao {
 	
-	// primeira versao
-	// eu exclui os setLinha e setColuna e ja criei o setPosicao
-
 	private int linha;
 	private int coluna;
 	
@@ -15,11 +12,13 @@ public class Posicao {
 	public int getLinha() {
 		return linha;
 	}
-	public Integer getColuna() {
+	public void setLinha(int linha) {
+		this.linha = linha;
+	}
+	public int getColuna() {
 		return coluna;
 	}
-	public void setPosicao(int linha, int coluna) {
-		this.linha = linha;
+	public void setColuna(int coluna) {
 		this.coluna = coluna;
 	}
 	
