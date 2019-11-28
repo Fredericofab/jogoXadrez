@@ -1,10 +1,10 @@
 package jogoDeTabuleiro;
 
-public class tabuleiroException extends RuntimeException {
+public class TabuleiroException extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;
 	
-	public tabuleiroException(String mensagem) {
+	public TabuleiroException(String mensagem) {
 		super(mensagem);
 	}
 
