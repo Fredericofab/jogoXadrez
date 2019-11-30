@@ -25,6 +25,12 @@ public class PartidaDeXadrez {
 		return matriz;
 	}
 	
+	public boolean[][] possiveisMovimentos(PosicaoXadrez posicaoOrigem){
+		Posicao posicao = posicaoOrigem.converteParaPosicao();
+		validaPosicaoOrigem(posicao);
+		return tabuleiro.peca(posicao).movimentosPossiveis();		
+	}
+	
 	public PecaDeXadrez executaMoveXadrez(PosicaoXadrez posicaoOrigem, PosicaoXadrez posicaoDestino) {
 		Posicao origem = posicaoOrigem.converteParaPosicao();
 		Posicao destino = posicaoDestino.converteParaPosicao();
