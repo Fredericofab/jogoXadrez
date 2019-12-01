@@ -18,7 +18,7 @@ public class Programa {
 		while (true) {
 			try {
 				InterfaceDoUsuario.limpaTela();
-				InterfaceDoUsuario.imprimeTabuleiro(partidaDeXadrez.getPecas());
+				InterfaceDoUsuario.imprimePartida(partidaDeXadrez);
 				
 				System.out.println();
 				System.out.print("Origem ");

@@ -4,6 +4,7 @@ import java.util.InputMismatchException;
 import java.util.Scanner;
 
 import xadrez.Cor;
+import xadrez.PartidaDeXadrez;
 import xadrez.PecaDeXadrez;
 import xadrez.PosicaoXadrez;
 
@@ -46,6 +47,13 @@ public class InterfaceDoUsuario {
 		}
 	}
 
+	public static void imprimePartida(PartidaDeXadrez partidaDeXadrez) {
+		imprimeTabuleiro(partidaDeXadrez.getPecas());
+		System.out.println();
+		System.out.println("Turno :" + partidaDeXadrez.getTurno());
+		System.out.println("Eserando o jogador: " + partidaDeXadrez.getJogadorAtual());
+	}
+	
 	public static void imprimeTabuleiro(PecaDeXadrez[][] pecas) {
 		for (int i = 0; i < pecas.length; i++) {
 			System.out.print((8 - i) + " ");
