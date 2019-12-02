@@ -17,6 +17,7 @@ public class PartidaDeXadrez {
 	private Cor jogadorAtual;
 	private Tabuleiro tabuleiro;
 	private boolean check;
+	private boolean checkMate;
 	
 	private List<Peca> pecasNoTabuleiro = new ArrayList<Peca>();
 	private List<Peca> pecasCapturadas = new ArrayList<>();
@@ -39,7 +40,10 @@ public class PartidaDeXadrez {
 	public boolean getCheck() {
 		return check;
 	}
-	
+	public boolean getCheckMate() {
+		return checkMate;
+	}
+		
 
 	public PecaDeXadrez[][] getPecas(){
 		PecaDeXadrez[][] matriz = new PecaDeXadrez[tabuleiro.getLinhas()][tabuleiro.getColunas()];
@@ -70,8 +74,13 @@ public class PartidaDeXadrez {
 		}
 		
 		check =  (testaCheck(oponente(jogadorAtual))) ? true : false;
-		
-		proximoTurno();
+
+		if (testaCheckMate(oponente(jogadorAtual)) == true ) {
+			checkMate = true;
+		}
+		else {
+			proximoTurno();
+		}
 		return (PecaDeXadrez) pecaCapturada;
 	}
 	
@@ -139,6 +148,7 @@ public class PartidaDeXadrez {
 	}
 	
 	private boolean testaCheck(Cor cor) {
+		//verifica se tem alguma peca adversaria que pode se mover para a posicao do rei
 		Posicao posicaoDoRei = rei(cor).getPosicaoXadrez().converteParaPosicao();
 		List<Peca> pecasDoOponente =  pecasNoTabuleiro.stream().filter(x -> ((PecaDeXadrez)x).getCor() == oponente(cor)).collect(Collectors.toList());
         for (Peca p : pecasDoOponente) {
@@ -150,24 +160,51 @@ public class PartidaDeXadrez {
         return false;
 	}
 	
+	private boolean testaCheckMate(Cor cor) {
+		if (testaCheck(cor) == false) {
+			return false;
+		}
+		//estando o rei em check, verifica se tem alguma peca da sua cor que tira ele do check
+		List<Peca> lista = pecasNoTabuleiro.stream().filter(x -> ((PecaDeXadrez)x).getCor() == cor).collect(Collectors.toList());
+		for (Peca p : lista) {
+			//para cada peca verificar cada um dos seus movimentos possiveis
+			boolean[][] matriz = p.movimentosPossiveis();
+			for (int i=0; i<tabuleiro.getLinhas();i++) {
+				for (int j=0; j<tabuleiro.getColunas();j++) {
+					if (matriz[i][j] == true) {
+						//verificar se esse movimento possivel tira o rei do  check. Para tanto:
+						//1 mover a peca "p" para essa posicao
+						Posicao origem = ((PecaDeXadrez)p).getPosicaoXadrez().converteParaPosicao();
+						Posicao destino = new Posicao(i, j);
+						Peca pecaCapturada = realizaMovimento(origem, destino);
+						//2 verifica se o rei ainda esta em check
+						boolean testaCheck = testaCheck(cor);
+						//3 desfaz o movimento para nao bagunçar o tabuleiro
+						desfazMovimento(origem, destino, pecaCapturada);
+						//4 testa se estava em check
+						if (testaCheck == false) {
+							//tirou o rei d check
+							return false;
+						}
+					}
+				}
+			}
+		}
+		return true;
+	}
+
+	
 	private void colocaNovaPeca(char coluna, int linha, PecaDeXadrez peca) {
 		tabuleiro.colocaPeca(peca, new PosicaoXadrez(coluna, linha).converteParaPosicao());
 		pecasNoTabuleiro.add(peca);
 	}
 	
 	private void setupInicial() {
-		colocaNovaPeca('c', 1, new Torre(tabuleiro, Cor.BRANCA));
-		colocaNovaPeca('c', 2, new Torre(tabuleiro, Cor.BRANCA));
-		colocaNovaPeca('d', 2, new Torre(tabuleiro, Cor.BRANCA));
-		colocaNovaPeca('e', 2, new Torre(tabuleiro, Cor.BRANCA));
-		colocaNovaPeca('e', 1, new Torre(tabuleiro, Cor.BRANCA));
-		colocaNovaPeca('d', 1, new Rei(tabuleiro, Cor.BRANCA));
+		colocaNovaPeca('h', 7, new Torre(tabuleiro, Cor.BRANCA));
+		colocaNovaPeca('d', 1, new Torre(tabuleiro, Cor.BRANCA));
+		colocaNovaPeca('e', 1, new Rei(tabuleiro, Cor.BRANCA));
 
-		colocaNovaPeca('c', 7, new Torre(tabuleiro, Cor.PRETA));
-		colocaNovaPeca('c', 8, new Torre(tabuleiro, Cor.PRETA));
-		colocaNovaPeca('d', 7, new Torre(tabuleiro, Cor.PRETA));
-		colocaNovaPeca('e', 7, new Torre(tabuleiro, Cor.PRETA));
-		colocaNovaPeca('e', 8, new Torre(tabuleiro, Cor.PRETA));
-		colocaNovaPeca('d', 8, new Rei(tabuleiro, Cor.PRETA));		
+		colocaNovaPeca('b', 8, new Torre(tabuleiro, Cor.PRETA));
+		colocaNovaPeca('a', 8, new Rei(tabuleiro, Cor.PRETA));		
 	}
 }

@@ -57,10 +57,17 @@ public class InterfaceDoUsuario {
 		imprimePecasCapturadas(capturadas);
 		System.out.println();
 		System.out.println("Turno :" + partidaDeXadrez.getTurno());
-		System.out.println("Esperando o jogador: " + partidaDeXadrez.getJogadorAtual());
-		if (partidaDeXadrez.getCheck() == true ) {
-			System.out.println("Voce esta em CHECK !!");
+		if (partidaDeXadrez.getCheckMate() == false) {
+			System.out.println("Esperando o jogador: " + partidaDeXadrez.getJogadorAtual());
+			if (partidaDeXadrez.getCheck() == true ) {
+				System.out.println("Voce esta em CHECK !!");
+			}
 		}
+		else {
+			System.out.println("CHECKMATE !!");
+			System.out.println("Vencedor " + partidaDeXadrez.getJogadorAtual());
+		}
+			
 	}
 	
 	public static void imprimeTabuleiro(PecaDeXadrez[][] pecas) {
