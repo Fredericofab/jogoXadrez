@@ -30,7 +30,7 @@ public class PosicaoXadrez {
 	}
 
 	protected static PosicaoXadrez converteDaPosicao(Posicao posicao) {
-		char colunaXadrez = (char) ('a' - posicao.getColuna()); 
+		char colunaXadrez = (char) ('a' + posicao.getColuna()); 
 		int linhaXadrez = 8 - posicao.getLinha();
 		return new PosicaoXadrez(colunaXadrez, linhaXadrez);
 	}

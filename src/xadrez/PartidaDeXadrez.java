@@ -2,6 +2,8 @@ package xadrez;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import jogoDeTabuleiro.Peca;
 import jogoDeTabuleiro.Posicao;
@@ -14,6 +16,7 @@ public class PartidaDeXadrez {
 	private int turno;
 	private Cor jogadorAtual;
 	private Tabuleiro tabuleiro;
+	private boolean check;
 	
 	private List<Peca> pecasNoTabuleiro = new ArrayList<Peca>();
 	private List<Peca> pecasCapturadas = new ArrayList<>();
@@ -23,6 +26,7 @@ public class PartidaDeXadrez {
 		tabuleiro = new Tabuleiro(8, 8);
 		turno = 1;
 		jogadorAtual = Cor.BRANCA;
+		check = false; // só para efeito de documentar, pois ja seria inicializada com falso
 		setupInicial();
 	}
 
@@ -32,6 +36,10 @@ public class PartidaDeXadrez {
 	public Cor getJogadorAtual() {
 		return jogadorAtual;
 	}
+	public boolean getCheck() {
+		return check;
+	}
+	
 
 	public PecaDeXadrez[][] getPecas(){
 		PecaDeXadrez[][] matriz = new PecaDeXadrez[tabuleiro.getLinhas()][tabuleiro.getColunas()];
@@ -55,6 +63,14 @@ public class PartidaDeXadrez {
 		validaPosicaoOrigem(origem);
 		validaPosicaoDestino(origem, destino);
 		Peca pecaCapturada = realizaMovimento(origem, destino);
+		
+		if (testaCheck(jogadorAtual)) {
+			desfazMovimento(origem, destino, pecaCapturada);
+			throw new XadrezException("Voce nao pode se  colocar em check");
+		}
+		
+		check =  (testaCheck(oponente(jogadorAtual))) ? true : false;
+		
 		proximoTurno();
 		return (PecaDeXadrez) pecaCapturada;
 	}
@@ -69,6 +85,17 @@ public class PartidaDeXadrez {
 			pecasCapturadas.add(pecaCapturada);
 		}
 		return pecaCapturada;
+	}
+	
+	private void desfazMovimento(Posicao origem, Posicao destino, Peca pecaCapturada) {
+		Peca p = tabuleiro.removePeca(destino);
+		tabuleiro.colocaPeca(p, origem);
+		
+		if (pecaCapturada != null) {
+			tabuleiro.colocaPeca(pecaCapturada, destino);
+			pecasCapturadas.remove(pecaCapturada);
+			pecasNoTabuleiro.add(pecaCapturada);
+		}
 	}
 	
 	private void validaPosicaoOrigem(Posicao posicao) {
@@ -91,7 +118,36 @@ public class PartidaDeXadrez {
 	
 	private void proximoTurno() {
 		turno = turno + 1;
-		jogadorAtual = (jogadorAtual == Cor.BRANCA ? Cor.PRETA : Cor.BRANCA);
+		jogadorAtual = (jogadorAtual == Cor.BRANCA) ? Cor.PRETA : Cor.BRANCA;
+	}
+	
+	private Cor oponente(Cor cor) {
+		return (cor == cor.BRANCA) ? cor.PRETA : cor.BRANCA;
+	}
+	
+	private PecaDeXadrez rei(Cor cor) {
+		//padrao para filtrar listas
+		List<Peca> lista = pecasNoTabuleiro.stream().filter(x -> ((PecaDeXadrez)x).getCor() == cor).collect(Collectors.toList());
+		for ( Peca p : lista) {
+			if (p instanceof Rei) {
+				return (PecaDeXadrez) p;
+			}
+		}
+		// isso nunca vai acontecer, mas o compilador exige um return fora do FOR
+		throw new IllegalStateException("Na existe rei " + cor + "no tabuleiro");
+		// nem vai ser tratada no programa principal. se acontecer vai estourar o sistema aqui
+	}
+	
+	private boolean testaCheck(Cor cor) {
+		Posicao posicaoDoRei = rei(cor).getPosicaoXadrez().converteParaPosicao();
+		List<Peca> pecasDoOponente =  pecasNoTabuleiro.stream().filter(x -> ((PecaDeXadrez)x).getCor() == oponente(cor)).collect(Collectors.toList());
+        for (Peca p : pecasDoOponente) {
+        	boolean[][] mat = p.movimentosPossiveis();
+        	if (mat[posicaoDoRei.getLinha()][posicaoDoRei.getColuna()] == true) {
+        		return true;
+        	}
+        }
+        return false;
 	}
 	
 	private void colocaNovaPeca(char coluna, int linha, PecaDeXadrez peca) {
