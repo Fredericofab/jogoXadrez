@@ -61,7 +61,6 @@ public class Torre extends PecaDeXadrez {
 		if (getTabuleiro().posicaoExiste(p) && existePecaOponente(p)) {
 			matriz[p.getLinha()][p.getColuna()] = true;
 		}
-
 		return matriz;
 	}
 
