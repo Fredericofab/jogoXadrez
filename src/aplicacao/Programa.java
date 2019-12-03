@@ -39,6 +39,12 @@ public class Programa {
                 if (pecaCapturada != null) {
                 	capturadas.add(pecaCapturada);
                 }
+                if(partidaDeXadrez.getPromovido() != null) {
+                	//por default, o "executaMoveXadrez" acima ja trocou por Rainha, mas vamos perguntar ao usuario
+                	System.out.print("Entre com a peca para promocao (Q/T/C/B)");
+                	String tipo = sc.nextLine();
+                	partidaDeXadrez.trocarPecaPromovida(tipo);
+                }
 			}
 			catch (XadrezException e) {
 				System.out.println(e.getMessage());
